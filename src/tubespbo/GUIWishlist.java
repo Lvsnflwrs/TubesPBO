@@ -205,7 +205,7 @@ public class GUIWishlist extends javax.swing.JFrame {
     }//GEN-LAST:event_PerbaruiBtnActionPerformed
 
     private void BackButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButton1ActionPerformed
-        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama();
+        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama(null);
         HalamanUtama.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_BackButton1ActionPerformed
@@ -235,6 +235,9 @@ public class GUIWishlist extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(GUIWishlist.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */

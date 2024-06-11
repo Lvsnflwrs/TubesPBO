@@ -9,6 +9,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -20,9 +21,10 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
     /**
      * Creates new form GUIHalamanUtama
      */
-    public GUIHalamanUtama() {
+    
+    public GUIHalamanUtama(List<infoProduk> listNamaProduk) {
         initComponents();
-        loadData();
+        loadData(listNamaProduk);
         DetailProdukButton.setVisible(false);
             this.addMouseListener(new MouseAdapter() {
             @Override
@@ -166,7 +168,10 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void SearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchButtonActionPerformed
-        
+        GUIHalamanUtama halamanUtama = new GUIHalamanUtama(null);
+        DialogSearch dialogSearch =new DialogSearch(halamanUtama,true);
+        dialogSearch.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_SearchButtonActionPerformed
 
     private void ProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ProfileButtonActionPerformed
@@ -193,24 +198,34 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
         
     }//GEN-LAST:event_DetailProdukButtonActionPerformed
 
-    private void loadData(){
-        DataBase db = new DataBase();
-        db.connect();
-        ResultSet rs = db.view("SELECT * FROM produk");
+    private void loadData(List<infoProduk> listNamaProduk){
         DefaultTableModel model = (DefaultTableModel) TabelProduk.getModel();
-        model.setRowCount(0);
-        try {
-            while(rs.next()){
+        if (listNamaProduk==null){
+            DataBase db = new DataBase();
+            db.connect();
+            ResultSet rs = db.view("SELECT * FROM produk");
+            model.setRowCount(0);
+            try {
+                while(rs.next()){
+                    Object[] row = new Object[2];
+                    row[0] = rs.getString("nama");
+                    row[1] = rs.getInt("harga");
+                    model.addRow(row);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                db.disconnect();
+            }
+        } else{
+            for(int i=0;i<listNamaProduk.size();i++){
                 Object[] row = new Object[2];
-                row[0] = rs.getString("nama");
-                row[1] = rs.getInt("harga");
+                row[0] = listNamaProduk.get(i).getNamaProduk();
+                row[1] = listNamaProduk.get(i).getHargaProduk();
                 model.addRow(row);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            db.disconnect();
         }
+        
     }
     /**
      * @param args the command line arguments
@@ -238,11 +253,14 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(GUIHalamanUtama.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GUIHalamanUtama().setVisible(true);
+                new GUIHalamanUtama(null).setVisible(true);
             }
         });
     }

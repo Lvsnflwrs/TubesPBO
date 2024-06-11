@@ -225,7 +225,7 @@ public class GUIProfile extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel1MouseClicked
 
     private void BackButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButton2ActionPerformed
-        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama();
+        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama(null);
         HalamanUtama.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_BackButton2ActionPerformed
@@ -255,6 +255,9 @@ public class GUIProfile extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(GUIProfile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
