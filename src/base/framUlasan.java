@@ -4,22 +4,68 @@
  */
 package base;
 
-import base.frameUlasan2;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import javax.swing.JOptionPane;
-import tampilantubes.Ulasan;
+import tubespbo.DataBase;
+import tubespbo.GUIHalamanUtama;
 
 /**
  *
  * @author francisca isabella
  */
 public class framUlasan extends javax.swing.JFrame {
+    private String namaProduk;
+    private int hargaProduk;
+    private String usernamePenjual;
 
     /**
      * Creates new form framUlasan
      */
-    public framUlasan() {
+    public framUlasan(String namaProduk, int hargaProduk) {
+        this.namaProduk = namaProduk;
+        this.hargaProduk = hargaProduk;
+        
         initComponents();
+        loadProductDetails();
+        
     }
+    
+    private void initComponents(){
+        
+        NamaProduk = new javax.swing.JLabel();
+        Harga = new javax.swing.JLabel();
+        
+        
+        NamaProduk.setText(namaProduk);
+        Harga.setText(String.valueOf(hargaProduk));
+    }
+    
+    private void loadProductDetails() {
+        DataBase db = new DataBase();
+        db.connect();
+        try {
+            String query = "SELECT r.*, u.username AS penjual " +
+                           "FROM review r " +
+                           "JOIN penjual u ON r.id_penjual = u.id_penjual " +
+                           "WHERE r.nama_produk = ? AND r.harga_produk = ?";
+            PreparedStatement ps = db.prepareStatement(query);
+            ps.setString(1, namaProduk);
+            ps.setInt(2, hargaProduk);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                usernamePenjual = rs.getString("username");
+                uPenjual.setText(usernamePenjual);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Failed to load product details.", "Error", JOptionPane.ERROR_MESSAGE);
+        }  finally {
+            db.disconnect();
+
+        }
+    }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -33,18 +79,19 @@ public class framUlasan extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
+        NamaProduk = new javax.swing.JLabel();
+        uPenjual = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
+        Harga = new javax.swing.JLabel();
         jTextField1 = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
+        jButton2 = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -57,13 +104,6 @@ public class framUlasan extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel3.setText("Rating  :  ");
 
-        jButton1.setText("Upload a Picture");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
         jButton3.setText("Submit");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -71,20 +111,13 @@ public class framUlasan extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
-        jLabel4.setText("Nikon D7500");
-
-        jLabel5.setText("Nikon Official Store");
+        NamaProduk.setFont(new java.awt.Font("Segoe UI", 0, 16)); // NOI18N
 
         jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aset/statusBar.png"))); // NOI18N
 
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aset/cam.png"))); // NOI18N
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aset/product 1.png"))); // NOI18N
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
-        jLabel7.setText("DSLR-Camera");
-
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel9.setText("Add Photos or video");
+        Harga.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
 
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -98,65 +131,82 @@ public class framUlasan extends javax.swing.JFrame {
         jTextArea1.setRows(5);
         jScrollPane1.setViewportView(jTextArea1);
 
+        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        jButton2.setText("<");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aset/Group 16.png"))); // NOI18N
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/aset/line.png"))); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(78, 78, 78))
             .addGroup(layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36))
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel10)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel9)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(18, 18, 18)
+                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 146, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(70, 70, 70))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel4))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(jLabel8)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(48, 48, 48))))
+                                    .addComponent(NamaProduk, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(uPenjual, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(Harga, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addGap(55, 55, 55))))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(77, 77, 77)
+                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 286, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(jLabel4)
+                        .addComponent(NamaProduk, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel7)
+                        .addComponent(Harga, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel5))
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel8)))
+                        .addComponent(uPenjual, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel8))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel9)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 99, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel2)
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -166,25 +216,20 @@ public class framUlasan extends javax.swing.JFrame {
                     .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel10)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(jButton3)
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        jButton1.setText("Picture Uploaded");
-
-    }//GEN-LAST:event_jButton1ActionPerformed
     
     private void jTextArea1(java.awt.event.ActionEvent evt){
-//        String text = jTextArea1.getText();
-//        frameUlasan2 frame2 = new frameUlasan2();
-//        frame2.setTextAreaText(text);
-
+    //
     }
     
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
@@ -192,43 +237,69 @@ public class framUlasan extends javax.swing.JFrame {
         String rate = jTextField1.getText();
         String desc = jTextArea1.getText();
         
-
-        // Cek apakah input merupakan angka
-        if (!rate.matches("\\d+")) {
-            // ra bukan angka, tampilkan pesan kesalahan
-            JOptionPane.showMessageDialog(this, "The rating must be a number", "Error", JOptionPane.ERROR_MESSAGE);
+        if (desc.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Description cannot be empty", "Error", JOptionPane.ERROR_MESSAGE);
+        } else if (rate.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Must give a rating", "Error", JOptionPane.ERROR_MESSAGE);
         } else {
-            // Jika input adalah angka, konversi ke integer
-            int rating = Integer.parseInt(rate);
-
-            // Cek apakah rating berada di rentang 0 hingga 5
-            if (rating < 0 || rating > 5) {
-                // Jika rating di luar rentang, tampilkan pesan kesalahan
-                JOptionPane.showMessageDialog(this, "Give a rating out of 5", "Error", JOptionPane.ERROR_MESSAGE);
+            if (!rate.matches("\\d+")) {
+                JOptionPane.showMessageDialog(this, "The rating must be a number", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
-                // Jika rating valid, lanjutkan dengan operasi lain yang diinginkan
-                // ...
+                int rating = Integer.parseInt(rate);
+
+                if (rating < 0 || rating > 5) {
+                    JOptionPane.showMessageDialog(this, "Give a rating out of 5", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    saveReviewToDatabase(desc, rating);
+                    this.setVisible(false);
+
+
+                    frameUlasan2 frame2 = new frameUlasan2();
+                    frame2.setTextAreaText(desc);
+                    frame2.setTextFieldText(rate);
+
+                    frame2.setVisible(true);
+                }
             }
         }
-        this.setVisible(false);
-        
-        Ulasan review = new Ulasan(rate,desc);
-        
-        // Membuat dan menampilkan frameUlasan2
-        frameUlasan2 frame2 = new frameUlasan2();
-        frame2.setTextAreaText(desc);
-        frame2.setTextFieldText(rate);
-
-        frame2.setVisible(true);
-
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void saveReviewToDatabase(String description, int rating) {
+        Database db = new Database();
+        db.connect();
+        try  {
+            String query = "INSERT INTO review (product_name, product_price, description, rating) VALUES (?, ?, ?, ?)";
+            PreparedStatement ps = db.prepareStatement(query);
+            ps.setString(1, namaProduk);
+            ps.setInt(2, hargaProduk);
+            ps.setString(3, description);
+            ps.setInt(4, rating);
+            int rowsAffected = ps.executeUpdate();
+
+            if (rowsAffected > 0) {
+                JOptionPane.showMessageDialog(this, "Review submitted successfully!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Failed to submit review.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Failed to submit review.", "Error", JOptionPane.ERROR_MESSAGE);
+        } finally {
+            db.disconnect();
+
+        }
+    }
+
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
-//        String text = jTextField1.getText();
-//        frameUlasan2 frame2 = new frameUlasan2();
-//        frame2.setTextFieldText(text);
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama();
+        HalamanUtama.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -259,14 +330,17 @@ public class framUlasan extends javax.swing.JFrame {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
-                new framUlasan().setVisible(true);
+                new framUlasan("123",123).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel Harga;
+    private javax.swing.JLabel NamaProduk;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -275,11 +349,10 @@ public class framUlasan extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField jTextField1;
+    private javax.swing.JLabel uPenjual;
     // End of variables declaration//GEN-END:variables
 }

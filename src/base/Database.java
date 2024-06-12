@@ -1,13 +1,21 @@
-package tubespbo;
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package base;
 
 import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-public class DataBase {
+/**
+ *
+ * @author francisca isabella
+ */
+public class Database {
     static final String url = "jdbc:mysql://localhost:3306/tubes";
     static final String user = "root";
     static final String pass = "";
@@ -50,7 +58,7 @@ public class DataBase {
         }
     }
 
-    public PreparedStatement prepareStatement(String query) {
+    PreparedStatement prepareStatement(String insertQuery) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }
