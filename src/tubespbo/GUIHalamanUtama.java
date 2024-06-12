@@ -195,7 +195,12 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
     }//GEN-LAST:event_TabelProdukMouseClicked
 
     private void DetailProdukButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DetailProdukButtonActionPerformed
-        
+        int selectedRow = TabelProduk.getSelectedRow();
+        String namaProduk = (String) TabelProduk.getValueAt(selectedRow, 0);
+        int hargaProduk = (int) TabelProduk.getValueAt(selectedRow, 1);
+        GUIHalamanProduk HalamanProduk = new GUIHalamanProduk(namaProduk,hargaProduk);
+        HalamanProduk.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_DetailProdukButtonActionPerformed
 
     private void loadData(List<infoProduk> listNamaProduk){
