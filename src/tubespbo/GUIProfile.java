@@ -14,10 +14,6 @@ import java.sql.SQLException;
  * @author HP
  */
 public class GUIProfile extends javax.swing.JFrame {
-
-    /**
-     * Creates new form GUIProfile
-     */
     private Connection conn;
     private ResultSet rs;
     private DataBase db = new DataBase();
@@ -25,10 +21,19 @@ public class GUIProfile extends javax.swing.JFrame {
     private EditAlamat ea = new EditAlamat(this, true);
     private EditNoHp enh = new EditNoHp(this, true);
     private EditPass ep = new EditPass(this, true);
+    private int loginId;
     public GUIProfile() {
         initComponents();
         db.connect();
-        rs = db.view("SELECT * FROM pembeli WHERE id = 1");
+        rs = db.view("SELECT * FROM login");
+        try{
+            if(rs.next()){
+                loginId = rs.getInt("id");
+            }
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        }
+        rs = db.view("SELECT * FROM pembeli WHERE id = "+loginId+"");
         try{
             while(rs.next()){
                 NamaDisplay.setText("Nama    : " + rs.getString("nama"));
@@ -39,6 +44,10 @@ public class GUIProfile extends javax.swing.JFrame {
             System.out.println(ex.getMessage());
         }
         db.disconnect();
+        en.loginId = loginId;
+        ea.loginId = loginId;
+        enh.loginId = loginId;
+        ep.loginId = loginId;
     }
 
     /**
@@ -190,22 +199,29 @@ public class GUIProfile extends javax.swing.JFrame {
 
     private void EditNamaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditNamaActionPerformed
         en.setVisible(true);
+        dispose();
         
     }//GEN-LAST:event_EditNamaActionPerformed
 
     private void EditNoHpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditNoHpActionPerformed
         enh.setVisible(true);
+        dispose();
     }//GEN-LAST:event_EditNoHpActionPerformed
 
     private void EditAlamatActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditAlamatActionPerformed
         ea.setVisible(true);
+        dispose();
     }//GEN-LAST:event_EditAlamatActionPerformed
 
     private void EditPassActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditPassActionPerformed
         ep.setVisible(true);
+        dispose();
     }//GEN-LAST:event_EditPassActionPerformed
 
     private void LogOutBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LogOutBtnActionPerformed
+        db.connect();
+        db.query("DELETE FROM login WHERE id = "+loginId+"");
+        db.disconnect();
         dispose();
     }//GEN-LAST:event_LogOutBtnActionPerformed
 
@@ -225,7 +241,7 @@ public class GUIProfile extends javax.swing.JFrame {
     }//GEN-LAST:event_jLabel1MouseClicked
 
     private void BackButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButton2ActionPerformed
-        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama();
+        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama(null);
         HalamanUtama.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_BackButton2ActionPerformed

@@ -9,6 +9,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -20,14 +22,42 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
     /**
      * Creates new form GUIHalamanUtama
      */
-    public GUIHalamanUtama() {
+    private boolean isPenjual = false;
+    private ResultSet rs;
+    private DataBase db = new DataBase();
+    private int loginId;
+    public GUIHalamanUtama(List<infoProduk> listNamaProduk) {
         initComponents();
+        db.connect();
+        rs = db.view("SELECT * FROM login");
+        try{
+            if(rs.next()){
+                loginId = rs.getInt("id");
+            }
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        }
+        rs = db.view("SELECT * FROM penjual WHERE id = "+loginId+"");
+        try{
+            if(rs.next()){
+                HalTokoButton.setVisible(true);
+                BukaTokoButton.setVisible(false);
+            }else{
+                HalTokoButton.setVisible(false);
+                BukaTokoButton.setVisible(true);
+            }
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        }
+        db.disconnect();
         loadData();
         DetailProdukButton.setVisible(false);
+        tambahKeranjangButton.setVisible(false);
             this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 DetailProdukButton.setVisible(false);
+                tambahKeranjangButton.setVisible(false);
             }
         });
 
@@ -36,6 +66,7 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
             public void mouseClicked(MouseEvent e) {
                 if (TabelProduk.getSelectedRow() >= 0) {
                     DetailProdukButton.setVisible(true);
+                    tambahKeranjangButton.setVisible(true);
                 }
             }
         });
@@ -59,6 +90,9 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
         SearchButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         DetailProdukButton = new javax.swing.JButton();
+        tambahKeranjangButton = new javax.swing.JButton();
+        BukaTokoButton = new javax.swing.JButton();
+        HalTokoButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -118,35 +152,63 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
             }
         });
 
+        tambahKeranjangButton.setText("+ Keranjang");
+        tambahKeranjangButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tambahKeranjangButtonActionPerformed(evt);
+            }
+        });
+
+        BukaTokoButton.setText("Buka Toko");
+        BukaTokoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BukaTokoButtonActionPerformed(evt);
+            }
+        });
+
+        HalTokoButton.setText("Halaman Toko");
+        HalTokoButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                HalTokoButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel1)
-                .addGap(254, 254, 254))
             .addGroup(layout.createSequentialGroup()
                 .addGap(49, 49, 49)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(KeranjangButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(WishlistButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(ProfileButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(SearchButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 81, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(55, 55, 55))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(195, 195, 195)
-                .addComponent(DetailProdukButton, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(HalTokoButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel1)
+                        .addGap(254, 254, 254))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                .addComponent(DetailProdukButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(tambahKeranjangButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(KeranjangButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(WishlistButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(ProfileButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(SearchButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(BukaTokoButton, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(55, 55, 55))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(HalTokoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 25, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(SearchButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -155,10 +217,14 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(WishlistButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(KeranjangButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(KeranjangButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(BukaTokoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(DetailProdukButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(DetailProdukButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(tambahKeranjangButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(58, 58, 58))
         );
 
@@ -166,7 +232,9 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void SearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchButtonActionPerformed
-        
+        DialogSearch Search = new DialogSearch(this, true);
+        Search.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_SearchButtonActionPerformed
 
     private void ProfileButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ProfileButtonActionPerformed
@@ -182,16 +250,64 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
     }//GEN-LAST:event_WishlistButtonActionPerformed
 
     private void KeranjangButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_KeranjangButtonActionPerformed
-        
+        GUIKeranjang keranjang = new GUIKeranjang();
+        keranjang.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_KeranjangButtonActionPerformed
 
     private void TabelProdukMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TabelProdukMouseClicked
        DetailProdukButton.setVisible(true);
+       tambahKeranjangButton.setVisible(true);
     }//GEN-LAST:event_TabelProdukMouseClicked
 
     private void DetailProdukButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DetailProdukButtonActionPerformed
-        
+        int selectedRow = TabelProduk.getSelectedRow();
+        if (selectedRow >= 0) {
+            String nama = (String) TabelProduk.getValueAt(selectedRow, 0);
+            int harga = (int) TabelProduk.getValueAt(selectedRow, 1);
+
+            GUIHalamanProduk dialog = new GUIHalamanProduk(nama, harga);
+            dialog.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Pilih produk terlebih dahulu!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_DetailProdukButtonActionPerformed
+
+    private void tambahKeranjangButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambahKeranjangButtonActionPerformed
+        int selectedRow = TabelProduk.getSelectedRow();
+        if (selectedRow >= 0) {
+            String nama = (String) TabelProduk.getValueAt(selectedRow, 0);
+            int harga = (int) TabelProduk.getValueAt(selectedRow, 1);
+
+            tambahKeranjang dialog = new tambahKeranjang(this, true, nama, harga);
+            dialog.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Pilih produk terlebih dahulu!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_tambahKeranjangButtonActionPerformed
+
+    private void BukaTokoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BukaTokoButtonActionPerformed
+        this.dispose();
+        db.connect();
+        rs = db.view("SELECT * FROM penjual WHERE id = "+loginId+"");
+        try{
+            if(rs.next()){
+                JOptionPane.showMessageDialog(this, "Anda telah membuka toko", "Message", JOptionPane.INFORMATION_MESSAGE);
+            }else{
+                db.query("INSERT INTO penjual(id) VALUES ("+loginId+")");
+            }
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        }
+        GUIHalamanUtama HalU = new GUIHalamanUtama(null);
+        HalU.setVisible(true);
+    }//GEN-LAST:event_BukaTokoButtonActionPerformed
+
+    private void HalTokoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HalTokoButtonActionPerformed
+        GUIHalamanToko HalToko = new GUIHalamanToko();
+        HalToko.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_HalTokoButtonActionPerformed
 
     private void loadData(){
         DataBase db = new DataBase();
@@ -242,13 +358,15 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new GUIHalamanUtama().setVisible(true);
+                new GUIHalamanUtama(null).setVisible(true);
             }
         });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BukaTokoButton;
     private javax.swing.JButton DetailProdukButton;
+    private javax.swing.JButton HalTokoButton;
     private javax.swing.JButton KeranjangButton;
     private javax.swing.JButton ProfileButton;
     private javax.swing.JButton SearchButton;
@@ -256,5 +374,6 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
     private javax.swing.JButton WishlistButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton tambahKeranjangButton;
     // End of variables declaration//GEN-END:variables
 }

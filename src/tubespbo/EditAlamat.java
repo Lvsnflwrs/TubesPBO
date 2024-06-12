@@ -21,6 +21,7 @@ public class EditAlamat extends javax.swing.JDialog {
     private Connection conn;
     private ResultSet rs;
     private DataBase db = new DataBase();
+    public int loginId;
     public EditAlamat(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -116,9 +117,11 @@ public class EditAlamat extends javax.swing.JDialog {
     private void SaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveBtnActionPerformed
         String nama = AlamatBaru.getText();
         db.connect();
-        db.query("UPDATE pembeli SET alamat = '"+nama+"' where id = 1");
+        db.query("UPDATE pembeli SET alamat = '"+nama+"' where id = "+loginId+"");
         rs = db.view("SELECT * FROM pembeli WHERE id = 1");
         db.disconnect();
+        GUIProfile profile = new GUIProfile();
+        profile.setVisible(true);
         dispose();
     }//GEN-LAST:event_SaveBtnActionPerformed
 
