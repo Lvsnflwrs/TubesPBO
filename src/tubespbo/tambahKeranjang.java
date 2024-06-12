@@ -139,7 +139,7 @@ public class tambahKeranjang extends javax.swing.JDialog {
             db.query("INSERT INTO keranjang (idProduk, idPembeli, Kuantitas) VALUES ("+produkId+", "+loginId+", "+kuantitas+")");
             db.disconnect();
             this.dispose();
-        }        
+        }
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

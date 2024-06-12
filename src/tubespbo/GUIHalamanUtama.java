@@ -51,6 +51,7 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
         }
         db.disconnect();
         loadData();
+        addWhs.setVisible(false);
         DetailProdukButton.setVisible(false);
         tambahKeranjangButton.setVisible(false);
             this.addMouseListener(new MouseAdapter() {
@@ -58,6 +59,7 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
             public void mouseClicked(MouseEvent e) {
                 DetailProdukButton.setVisible(false);
                 tambahKeranjangButton.setVisible(false);
+                addWhs.setVisible(false);
             }
         });
 
@@ -67,6 +69,7 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
                 if (TabelProduk.getSelectedRow() >= 0) {
                     DetailProdukButton.setVisible(true);
                     tambahKeranjangButton.setVisible(true);
+                    addWhs.setVisible(false);
                 }
             }
         });
@@ -93,6 +96,7 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
         tambahKeranjangButton = new javax.swing.JButton();
         BukaTokoButton = new javax.swing.JButton();
         HalTokoButton = new javax.swing.JButton();
+        addWhs = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -173,6 +177,13 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
             }
         });
 
+        addWhs.setText("+Wishlist");
+        addWhs.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addWhsActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -189,7 +200,9 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                                 .addComponent(DetailProdukButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(addWhs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(tambahKeranjangButton, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 68, Short.MAX_VALUE)
@@ -223,8 +236,9 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 314, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(DetailProdukButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(tambahKeranjangButton, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(tambahKeranjangButton, javax.swing.GroupLayout.DEFAULT_SIZE, 37, Short.MAX_VALUE)
+                    .addComponent(addWhs, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(DetailProdukButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(58, 58, 58))
         );
 
@@ -278,9 +292,31 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
         if (selectedRow >= 0) {
             String nama = (String) TabelProduk.getValueAt(selectedRow, 0);
             int harga = (int) TabelProduk.getValueAt(selectedRow, 1);
-
-            tambahKeranjang dialog = new tambahKeranjang(this, true, nama, harga);
-            dialog.setVisible(true);
+            
+            int produkId = 0;
+            
+            db.connect();
+            rs = db.view("SELECT * FROM produk WHERE nama = '"+nama+"'");
+            try{
+                if(rs.next()){
+                    produkId = rs.getInt("Id");
+                }
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            }
+            rs = db.view("SELECT * FROM wishlist WHERE idProduk = "+produkId+" AND idPembeli = "+loginId+"");
+            try{
+                if(rs.next()){
+                    JOptionPane.showMessageDialog(this, "Produk sudah ada di wishlist anda", "Message", JOptionPane.ERROR_MESSAGE);
+                }else{
+                    db.query("INSERT INTO wishlist(idPembeli, idProduk) VALUES ("+loginId+", "+produkId+")");
+                    JOptionPane.showMessageDialog(this, "Produk berhasil ditambahkan ke wishlist anda", "Message", JOptionPane.INFORMATION_MESSAGE);
+                    db.disconnect();
+                }
+            }catch(SQLException ex){
+                System.out.println(ex.getMessage());
+            }
+            
         } else {
             JOptionPane.showMessageDialog(this, "Pilih produk terlebih dahulu!", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -308,6 +344,19 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
         HalToko.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_HalTokoButtonActionPerformed
+
+    private void addWhsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addWhsActionPerformed
+        int selectedRow = TabelProduk.getSelectedRow();
+        if (selectedRow >= 0) {
+            String nama = (String) TabelProduk.getValueAt(selectedRow, 0);
+            int harga = (int) TabelProduk.getValueAt(selectedRow, 1);
+
+            tambahKeranjang dialog = new tambahKeranjang(this, true, nama, harga);
+            dialog.setVisible(true);
+        } else {
+            JOptionPane.showMessageDialog(this, "Pilih produk terlebih dahulu!", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_addWhsActionPerformed
 
     private void loadData(){
         DataBase db = new DataBase();
@@ -372,6 +421,7 @@ public class GUIHalamanUtama extends javax.swing.JFrame {
     private javax.swing.JButton SearchButton;
     private javax.swing.JTable TabelProduk;
     private javax.swing.JButton WishlistButton;
+    private javax.swing.JButton addWhs;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton tambahKeranjangButton;

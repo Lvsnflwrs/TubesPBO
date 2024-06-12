@@ -28,6 +28,17 @@ public class GUIWishlist extends javax.swing.JFrame {
     public GUIWishlist() {
         initComponents();
         
+        db.connect();
+        rs = db.view("SELECT * FROM login");
+        try{
+            if(rs.next()){
+                loginId = rs.getInt("id");
+            }
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        }
+        db.disconnect();
+        
         listModel = new DefaultListModel();
         HapusBtn.setVisible(false);
     }
@@ -161,7 +172,7 @@ public class GUIWishlist extends javax.swing.JFrame {
         try {
             if(rs.next()){
                 int id = rs.getInt("id");
-                db.query("DELETE FROM wishlist WHERE idProduk = "+id+" AND idPembeli = 1");
+                db.query("DELETE FROM wishlist WHERE idProduk = "+id+" AND idPembeli = "+loginId+"");
                 JOptionPane.showMessageDialog(this, "Data Telah Dihapus, Silahkan Perbarui List!");
             } else {
                 JOptionPane.showMessageDialog(this, "Data Tidak Ditemukan!");
@@ -194,14 +205,6 @@ public class GUIWishlist extends javax.swing.JFrame {
         ListProduk.removeAll();
         listModel.removeAllElements();
         db.connect();
-        rs = db.view("SELECT * FROM login");
-        try{
-            if(rs.next()){
-                loginId = rs.getInt("id");
-            }
-        }catch(SQLException ex){
-            System.out.println(ex.getMessage());
-        }
         rs = db.view("SELECT p.nama FROM wishlist w JOIN produk p ON w.idProduk = p.id WHERE w.idPembeli = "+loginId+"");
         try{
             while(rs.next()){
