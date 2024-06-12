@@ -21,6 +21,7 @@ public class EditNoHp extends javax.swing.JDialog {
     private Connection conn;
     private ResultSet rs;
     private DataBase db = new DataBase();
+    public int loginId;
     public EditNoHp(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -117,11 +118,13 @@ public class EditNoHp extends javax.swing.JDialog {
         try{
             int nama = parseInt(NomorBaru.getText());
             db.connect();
-            db.query("UPDATE pembeli SET noTelp = '"+nama+"' where id = 1");
+            db.query("UPDATE pembeli SET noTelp = '"+nama+"' where id = "+loginId+"");
             db.disconnect();
         }catch(Exception e){
             System.out.println(e.getMessage());
         }
+        GUIProfile profile = new GUIProfile();
+        profile.setVisible(true);
         dispose();
     }//GEN-LAST:event_SaveBtnActionPerformed
 

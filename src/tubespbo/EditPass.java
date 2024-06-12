@@ -20,6 +20,7 @@ public class EditPass extends javax.swing.JDialog {
     private Connection conn;
     private ResultSet rs;
     private DataBase db = new DataBase();
+    public int loginId;
     public EditPass(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -104,8 +105,10 @@ public class EditPass extends javax.swing.JDialog {
     private void SaveBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SaveBtnActionPerformed
         String nama = PasswordBaru.getText();
         db.connect();
-        db.query("UPDATE pembeli SET password = '"+nama+"' where id = 1");
+        db.query("UPDATE pembeli SET password = '"+nama+"' where id = "+loginId+"");
         db.disconnect();
+        GUIProfile profile = new GUIProfile();
+        profile.setVisible(true);
         dispose();
     }//GEN-LAST:event_SaveBtnActionPerformed
 

@@ -5,6 +5,7 @@ import java.sql.Statement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 
 public class DataBase {
     static final String url = "jdbc:mysql://localhost:3306/tubes";
@@ -41,11 +42,23 @@ public class DataBase {
         return rs;
     }
     
+    public Connection getConnection() {
+        return conn;
+    }
+    
     public void disconnect(){
         try{
             conn.close();
         } catch(SQLException ex){
             System.out.println(ex.getMessage());
         }
+    }
+    
+    
+    public PreparedStatement prepareStatement(String sql) throws SQLException {
+        if (conn == null || conn.isClosed()) {
+            throw new SQLException("Connection is not established or is closed.");
+        }
+        return conn.prepareStatement(sql);
     }
 }

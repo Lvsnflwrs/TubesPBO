@@ -24,6 +24,7 @@ public class GUIWishlist extends javax.swing.JFrame {
     private Connection conn;
     private ResultSet rs;
     private DataBase db = new DataBase();
+    private int loginId;
     public GUIWishlist() {
         initComponents();
         
@@ -98,30 +99,32 @@ public class GUIWishlist extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(74, 74, 74)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(121, 121, 121)
-                        .addComponent(PerbaruiBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(342, 342, 342))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(DisplayName)
-                                    .addComponent(DisplayHarga)
-                                    .addComponent(DisplayStok))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addComponent(DisplayName)
+                            .addComponent(DisplayHarga)
+                            .addComponent(DisplayStok))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(HapusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel1))
-                                .addGap(69, 69, 69))))))
+                                .addComponent(jLabel1)
+                                .addGap(69, 69, 69))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(HapusBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(60, 60, 60))))))
             .addGroup(layout.createSequentialGroup()
-                .addGap(21, 21, 21)
-                .addComponent(BackButton1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(21, 21, 21)
+                        .addComponent(BackButton1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(182, 182, 182)
+                        .addComponent(PerbaruiBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -190,9 +193,16 @@ public class GUIWishlist extends javax.swing.JFrame {
     private void PerbaruiBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PerbaruiBtnActionPerformed
         ListProduk.removeAll();
         listModel.removeAllElements();
-        
         db.connect();
-        rs = db.view("SELECT p.nama FROM wishlist w JOIN produk p ON w.idProduk = p.id WHERE w.idPembeli = 1");
+        rs = db.view("SELECT * FROM login");
+        try{
+            if(rs.next()){
+                loginId = rs.getInt("id");
+            }
+        }catch(SQLException ex){
+            System.out.println(ex.getMessage());
+        }
+        rs = db.view("SELECT p.nama FROM wishlist w JOIN produk p ON w.idProduk = p.id WHERE w.idPembeli = "+loginId+"");
         try{
             while(rs.next()){
                 listModel.addElement(rs.getString("nama"));
@@ -205,7 +215,7 @@ public class GUIWishlist extends javax.swing.JFrame {
     }//GEN-LAST:event_PerbaruiBtnActionPerformed
 
     private void BackButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BackButton1ActionPerformed
-        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama();
+        GUIHalamanUtama HalamanUtama = new GUIHalamanUtama(null);
         HalamanUtama.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_BackButton1ActionPerformed
